@@ -2,7 +2,14 @@
 // caption, export. A `?shot=` query sets up a fixed scene for a screenshot
 // instead (./shots.js). Photos never leave the machine.
 import { drawCover, defaultState, LAYOUTS, GRADES, SIZES, TITLE_COLORS } from './cover.js';
+import { BUILD_PRESETS } from './build-presets.js';
 import { runShot } from './shots.js';
+
+// Extra presets the build hands in (a Story export size and a Midnight Neon
+// grade): merge them into the engine's tables before the rows are built, so
+// they appear in the UI and export exactly like the built-ins.
+Object.assign(SIZES, BUILD_PRESETS.sizes);
+Object.assign(GRADES, BUILD_PRESETS.grades);
 
 const canvas = document.getElementById('cover');
 const statusEl = document.getElementById('status');
