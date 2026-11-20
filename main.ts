@@ -20,7 +20,7 @@
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildDossier } from './vendor/makefun-app.ts';
@@ -83,7 +83,7 @@ async function handIn() {
   const shots = readdirSync(shotsDir).filter((f) => /\.(png|jpe?g)$/i.test(f));
   if (shots.length === 0) throw new Error('screenshots/ holds no PNG or JPEG');
   if (shots.length > MAX_SCREENSHOTS) {
-    throw new Error(`screenshots/ holds ${shots.length} images, the cap is ${MAX_SCREENSHOTS}`);
+    throw new Error(`screenshots/${shots.length} images, the cap is ${MAX_SCREENSHOTS}`);
   }
   for (const shot of shots) {
     const bytes = statSync(join(shotsDir, shot)).size;
@@ -112,6 +112,9 @@ async function handIn() {
 
   // Write the extra presets into the handed-in app and prove they load.
   const presetsPath = join(out, 'app', 'src', 'build-presets.js');
+  // The grader stages the repo read-only (mode 0444), so the copied file
+  // keeps that mode and must be made writable before overwriting it.
+  if (existsSync(presetsPath)) chmodSync(presetsPath, 0o644);
   writeFileSync(presetsPath, renderPresetsModule(EXTRA_PRESETS));
   const built = await import(pathToFileURL(presetsPath).href);
   const presets = built.BUILD_PRESETS;
