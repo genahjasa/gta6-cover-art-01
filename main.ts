@@ -83,7 +83,7 @@ async function handIn() {
   const shots = readdirSync(shotsDir).filter((f) => /\.(png|jpe?g)$/i.test(f));
   if (shots.length === 0) throw new Error('screenshots/ holds no PNG or JPEG');
   if (shots.length > MAX_SCREENSHOTS) {
-    throw new Error(`screenshots/${shots.length} images, the cap is ${MAX_SCREENSHOTS}`);
+    throw new Error(`screenshots/ holds ${shots.length} images, the cap is ${MAX_SCREENSHOTS}`);
   }
   for (const shot of shots) {
     const bytes = statSync(join(shotsDir, shot)).size;
